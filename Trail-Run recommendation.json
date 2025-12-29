@@ -1,0 +1,116 @@
+{
+  "name": "Trail-Run recommendation",
+  "nodes": [
+    {
+      "parameters": {
+        "rule": {
+          "interval": [
+            {
+              "triggerAtHour": 11
+            }
+          ]
+        }
+      },
+      "type": "n8n-nodes-base.scheduleTrigger",
+      "typeVersion": 1.3,
+      "position": [-144, 32],
+      "id": "da33ed8d-b327-4aff-87f5-631600929452",
+      "name": "Schedule Trigger"
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "You are a Weather-Aware Trail Running Assistant for Hyderabad. Follow these steps strictly and in order:\n\nSTEP 1: Check Current Weather...\n(Full prompt preserved)"
+      },
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 3.1,
+      "position": [264, -64],
+      "id": "5f24db48-b9d2-4f67-9a71-daac93c76c59",
+      "name": "AI Agent"
+    },
+    {
+      "parameters": {
+        "sessionIdType": "customKey",
+        "sessionKey": "trail_run_session"
+      },
+      "type": "@n8n/n8n-nodes-langchain.memoryBufferWindow",
+      "typeVersion": 1.3,
+      "position": [80, 224],
+      "id": "3151dbe0-121a-4104-be58-45795d05e7ab",
+      "name": "Simple Memory"
+    },
+    {
+      "parameters": {},
+      "type": "@n8n/n8n-nodes-langchain.chatTrigger",
+      "typeVersion": 1.4,
+      "position": [-144, -160],
+      "id": "5f610aa8-fb6e-41be-b273-cc1106f9a4f2",
+      "name": "When chat message received"
+    },
+    {
+      "parameters": {
+        "documentId": "GOOGLE_SHEET_ID",
+        "sheetName": "Runs"
+      },
+      "type": "n8n-nodes-base.googleSheetsTool",
+      "typeVersion": 4.7,
+      "position": [416, 208],
+      "id": "bdc77586-30af-4a60-9a7f-961b36a629c0",
+      "name": "Get row(s) in sheet in Google Sheets"
+    },
+    {
+      "parameters": {
+        "sendTo": "your-email@example.com",
+        "subject": "={{ $fromAI('Subject') }}",
+        "message": "={{ $fromAI('Message') }}",
+        "options": {
+          "senderName": "Trail Run Bot"
+        }
+      },
+      "type": "n8n-nodes-base.gmailTool",
+      "typeVersion": 2.2,
+      "position": [704, 160],
+      "id": "5cd6aa03-0a44-4066-8a5d-3870ee459c9a",
+      "name": "Send Gmail Notification"
+    },
+    {
+      "parameters": {
+        "model": "gpt-4.1-mini"
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatOpenAi",
+      "typeVersion": 1.3,
+      "position": [-80, 208],
+      "id": "df2def70-840b-43a2-87f0-763c30d08ac0",
+      "name": "OpenAI Chat Model"
+    },
+    {
+      "parameters": {
+        "format": "metric",
+        "cityName": "Hyderabad, IN"
+      },
+      "type": "n8n-nodes-base.openWeatherMapTool",
+      "typeVersion": 1,
+      "position": [576, 224],
+      "id": "bc3580d7-4b72-49a8-bdd9-41cd8ec06b4e",
+      "name": "OpenWeatherMap"
+    },
+    {
+      "parameters": {
+        "calendar": "your-email@example.com",
+        "additionalFields": {
+          "summary": "Trail-Run"
+        }
+      },
+      "type": "n8n-nodes-base.googleCalendarTool",
+      "typeVersion": 1.3,
+      "position": [256, 208],
+      "id": "de1b10e8-ed3c-4ddd-b9d2-540c01bc2365",
+      "name": "Create Google Calendar Event"
+    }
+  ],
+  "connections": {},
+  "active": false,
+  "settings": {
+    "executionOrder": "v1"
+  }
+}
